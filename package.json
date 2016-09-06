@@ -1,6 +1,6 @@
 {
   "name": "react-bbox-selector",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React component to select Bounding Box(es).",
   "main": "lib/BBoxSelector.js",
   "scripts": {
@@ -25,7 +25,6 @@
   },
   "homepage": "https://github.com/lightstream-company/react-bbox-selector#readme",
   "peerDependencies": {
-    "mapbox-gl": "^0.23.0",
     "react": "^15.3.1"
   },
   "devDependencies": {
@@ -41,5 +40,7 @@
     "react-dom": "^15.3.1",
     "watchify": "^3.7.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "mapbox-gl": "^0.23.0"
+  }
 }
