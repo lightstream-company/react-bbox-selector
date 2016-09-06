@@ -7,7 +7,6 @@ class BBoxSelector extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      pointToAdd: 0,
       collection: []
     };
   }
@@ -70,18 +69,13 @@ class BBoxSelector extends Component {
   clear() {
     this.setCollection([]);
   }
+  undo() {
+    this.setCollection(this.state.collection.slice(0,-1));
+  }
   render() {
-    const props = {
-      onClick: () => {
-        this.setState({
-          pointToAdd: 2
-        });
-      },
-      disabled: this.state.pointToAdd > 0
-    };
     return <div>
-      <button {...props}>Add bouding box</button>
       <button onClick={() => this.clear()}>Clear</button>
+      <button onClick={() => this.undo()}>Undo</button>
       <div ref="mapcontent"></div>
     </div>;
   }
