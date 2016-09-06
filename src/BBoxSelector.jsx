@@ -1,7 +1,6 @@
-import React, { Component } from 'React';
+import React, { Component, PropTypes } from 'React';
 import mapboxgl from 'mapbox-gl';
-import addLngLat from './addLngLat';
-import updateLastLngLat from './updateLastLngLat';
+import {addLngLat, updateLastLngLat} from './utils';
 
 class BBoxSelector extends Component {
   constructor(props) {
@@ -12,7 +11,7 @@ class BBoxSelector extends Component {
   }
   componentDidMount() {
     this.map = new mapboxgl.Map({
-      style: 'mapbox://styles/mapbox/streets-v9',
+      style: this.props.mapStyle || 'mapbox://styles/mapbox/streets-v9',
       container: this.refs.mapcontent
     //    interactive: false
     });
@@ -44,10 +43,11 @@ class BBoxSelector extends Component {
         type: 'fill',
         source: 'boxes',
         layout: {},
-        paint: {
-          'fill-color': '#088',
-          'fill-opacity': 0.8
-        }
+        paint: Object.assign({
+          'fill-color': '#fff',
+          'fill-opacity': 0.2,
+          'fill-outline-color': '#000'
+        }, this.props.layerStyle)
       });
     });
   }
@@ -62,6 +62,13 @@ class BBoxSelector extends Component {
       collection
     });
     this.map.getSource('boxes').setData(this.getGeoJSONData());
+    if (this.props.onBoundingBoxChange) {
+      this.props.onBoundingBoxChange(this.state.collection.filter((item) => {
+        return item.geometry.type === 'Polygon';
+      }).map((item) => {
+        return item.geometry.coordinates[0].slice(0, -1);
+      }));
+    }
   }
   onMouseEvent(e) {
     this.setCollection(addLngLat(e.lngLat.wrap().toArray(), this.state.collection));
@@ -70,7 +77,7 @@ class BBoxSelector extends Component {
     this.setCollection([]);
   }
   undo() {
-    this.setCollection(this.state.collection.slice(0,-1));
+    this.setCollection(this.state.collection.slice(0, -1));
   }
   render() {
     return <div>
@@ -80,5 +87,11 @@ class BBoxSelector extends Component {
     </div>;
   }
 }
+
+BBoxSelector.propTypes = {
+  mapStyle: PropTypes.any,
+  layerStyle: PropTypes.object,
+  onBoundingBoxChange: PropTypes.func
+};
 
 export default BBoxSelector;
