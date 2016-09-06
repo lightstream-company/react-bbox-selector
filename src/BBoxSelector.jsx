@@ -1,6 +1,7 @@
 import React, { Component } from 'React';
 import mapboxgl from 'mapbox-gl';
 import addLngLat from './addLngLat';
+import updateLastLngLat from './updateLastLngLat';
 
 class BBoxSelector extends Component {
   constructor(props) {
@@ -16,7 +17,24 @@ class BBoxSelector extends Component {
       container: this.refs.mapcontent
     //    interactive: false
     });
-    this.map.on('click', this.onMouseEvent.bind(this));
+
+    this.map.on('click', (clickEvent) => {
+      if (!this.drawing) {
+        this.onMouseEvent(clickEvent);
+        this.map.once('mousemove', (firstMoveEvent) => {
+          this.onMouseEvent(firstMoveEvent);
+          this.drawing = true;
+        });
+      } else {
+        this.drawing = false;
+      }
+    });
+    this.map.on('mousemove', (moveEvent) => {
+      if (this.drawing) {
+        this.setCollection(updateLastLngLat(moveEvent.lngLat.wrap().toArray(), this.state.collection));
+      }
+    });
+
     this.map.on('load', () => {
       this.map.addSource('boxes', {
         type: 'geojson',
@@ -40,18 +58,18 @@ class BBoxSelector extends Component {
       features: this.state.collection
     };
   }
-  onMouseEvent(e) {
-    if (this.state.pointToAdd > 0) {
-      this.setState({
-        pointToAdd: this.state.pointToAdd - 1
-      });
-      this.setState({
-        collection: addLngLat(e.lngLat.wrap().toArray(), this.state.collection)
-      });
-      this.map.getSource('boxes').setData(this.getGeoJSONData());
-    }
+  setCollection(collection) {
+    this.setState({
+      collection
+    });
+    this.map.getSource('boxes').setData(this.getGeoJSONData());
   }
-
+  onMouseEvent(e) {
+    this.setCollection(addLngLat(e.lngLat.wrap().toArray(), this.state.collection));
+  }
+  clear() {
+    this.setCollection([]);
+  }
   render() {
     const props = {
       onClick: () => {
@@ -63,6 +81,7 @@ class BBoxSelector extends Component {
     };
     return <div>
       <button {...props}>Add bouding box</button>
+      <button onClick={() => this.clear()}>Clear</button>
       <div ref="mapcontent"></div>
     </div>;
   }
