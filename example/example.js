@@ -15,12 +15,10 @@ class App extends Component {
   }
   render() {
     return <div>
-      <BBoxSelector onBoundingBoxChange={(col) => this.setState({
+      <BBoxSelector boxes={[[-10, -10, 10, 10]]} onBoundingBoxChange={(col) => this.setState({
         bbox: col
       })} />
-      <pre>
-        {JSON.stringify(this.state.bbox, null, ' ')}
-      </pre>
+      {this.state.bbox.map((box, i) => <pre key={i}>{box.join()}</pre>)}
     </div>;
   }
 }

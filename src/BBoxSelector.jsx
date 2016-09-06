@@ -1,19 +1,27 @@
 import React, { Component, PropTypes } from 'React';
 import mapboxgl from 'mapbox-gl';
-import {addLngLat, updateLastLngLat} from './utils';
+import { addLngLat, updateLastLngLat, boundingboxToPolygone, polygonToBoundingbox } from './utils';
 
 class BBoxSelector extends Component {
   constructor(props) {
     super(props);
+    var collection = [];
+    if (props.boxes) {
+      collection = props.boxes.map((bbox) => {
+        return {
+          type: 'Feature',
+          geometry: boundingboxToPolygone(bbox)
+        };
+      });
+    }
     this.state = {
-      collection: []
+      collection
     };
   }
   componentDidMount() {
     this.map = new mapboxgl.Map({
       style: this.props.mapStyle || 'mapbox://styles/mapbox/streets-v9',
       container: this.refs.mapcontent
-    //    interactive: false
     });
 
     this.map.on('click', (clickEvent) => {
@@ -66,7 +74,7 @@ class BBoxSelector extends Component {
       this.props.onBoundingBoxChange(this.state.collection.filter((item) => {
         return item.geometry.type === 'Polygon';
       }).map((item) => {
-        return item.geometry.coordinates[0].slice(0, -1);
+        return polygonToBoundingbox(item.geometry);
       }));
     }
   }
@@ -91,6 +99,7 @@ class BBoxSelector extends Component {
 BBoxSelector.propTypes = {
   mapStyle: PropTypes.any,
   layerStyle: PropTypes.object,
+  boxes: PropTypes.array,
   onBoundingBoxChange: PropTypes.func
 };
 
