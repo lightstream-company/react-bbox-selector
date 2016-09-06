@@ -52,11 +52,26 @@ function addLngLat(lngLat, collection) {
 }
 
 function polygonToBoundingbox(polygon) {
-  return polygon;
+  const c = polygon.coordinates[0];
+  return [
+    Math.min(c[0][0], c[1][0], c[2][0], c[3][0], c[4][0]),
+    Math.min(c[0][1], c[1][1], c[2][1], c[3][1], c[4][1]),
+    Math.max(c[0][0], c[1][0], c[2][0], c[3][0], c[4][0]),
+    Math.max(c[0][1], c[1][1], c[2][1], c[3][1], c[4][1])
+  ];
 }
 
-function boundingboxToPolygone(bbox) {
-  return bbox;
+function boundingboxToPolygone(b) {
+  return {
+    type: 'Polygon',
+    coordinates: [[
+      [b[2], b[3]],
+      [b[0], b[3]],
+      [b[0], b[1]],
+      [b[2], b[1]],
+      [b[2], b[3]]
+    ]]
+  };
 }
 
 

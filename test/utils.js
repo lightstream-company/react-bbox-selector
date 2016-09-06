@@ -104,30 +104,30 @@ describe('utils', () => {
   });
 
   describe('polygonToBoundingbox', () => {
-    it.skip('should covert polygon to bbox', () => {
+    it('should covert polygon to bbox', () => {
       expect(polygonToBoundingbox({
         type: 'Polygon',
         coordinates: [[
-          [50, 50],
-          [-50, 50],
-          [-50, -50],
-          [50, -50],
-          [50, 50]
+          [20, 30],
+          [-50, 30],
+          [-50, -40],
+          [20, -40],
+          [20, 30]
         ]]
-      })).to.be.deep.equal([-50, -50, 50, 50]);
+      })).to.be.deep.equal([-50, -40, 20, 30]);
     });
   });
 
-  describe.skip('boundingboxToPolygone', () => {
+  describe('boundingboxToPolygone', () => {
     it('should polygon to bbox', () => {
-      expect(boundingboxToPolygone([-50, -50, 50, 50])).to.be.deep.equal({
+      expect(boundingboxToPolygone([-50, -40, 20, 30])).to.be.deep.equal({
         type: 'Polygon',
         coordinates: [[
-          [50, 50],
-          [-50, 50],
-          [-50, -50],
-          [50, -50],
-          [50, 50]
+          [20, 30],
+          [-50, 30],
+          [-50, -40],
+          [20, -40],
+          [20, 30]
         ]]
       });
     });
